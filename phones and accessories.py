@@ -10,13 +10,13 @@ connection = mysql.connector.connect(
     database="jumiadec_2024"
 )
 conn = connection.cursor()
-column_names = ["Name", "Discount_price", "Old_price", "Rating_stars"]#column_name for csv file
+column_names = ["Name", "Discount_price", "Actual_price", "Rating_stars"]#column_name for csv file
 products = [] #empty list
-filepath = r"C:\Users\HP\OneDrive\Desktop\jumia_dec_2024\jumia_laptors.csv"#file path for my csv file
+filepath = r"C:\Users\HP\OneDrive\Desktop\jumia_dec_2024\jumia_phoneadapterschargers.csv"#file path for my csv file
 # Function to create table if not exists
 def createtables():
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS laptors(
+    CREATE TABLE IF NOT EXISTS phone_adapters_chargers(
         name VARCHAR(255),
         discount_price VARCHAR(255),
         actual_price VARCHAR(255),
@@ -39,13 +39,13 @@ def fetch_data(category, page_number):
         rating = info.find("div", class_="rev")
         rating_stars = rating.find("div", class_="stars _s").text.split()[0] if rating else "No rating"
         query = '''
-        INSERT INTO laptors(name, discount_price, actual_price, rating_stars)
+        INSERT INTO phone_adapters_chargers(name, discount_price, actual_price, rating_stars)
         VALUES (%s, %s, %s, %s)
         '''
         dat_a = (name, discount_price, actual_price, rating_stars)
         conn.execute(query, dat_a)
         connection.commit()
-        products.append({"Name":name,"Discount_price":discount_price,"Old-price":old_price,"Rating_stars":rating_stars})
+        products.append({"Name":name,"Discount_price":discount_price,"Actual_price":actual_price,"Rating_stars":rating_stars})
 # Function to loop through pages and fetch data
 def url_loop(category, start_page=1, max_pages=50):
     for page_number in range(start_page, max_pages + 1):
@@ -56,7 +56,7 @@ def url_loop(category, start_page=1, max_pages=50):
     print(f"Data saved to {filepath}")
 #main function
 def main():
-    category = input("Enter the category to replace 'phones-tablets' in the URL: ")
+    category = input("Enter the category to search for: ")
     start_page = int(input("Enter the start page number: "))
     max_pages = int(input("Enter the maximum number of pages to fetch: "))
     url_loop(category, start_page, max_pages)
